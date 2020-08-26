@@ -17,7 +17,13 @@ class BrandController extends Controller
     public function index()
     {
         $brands = Brand::all();
-        return BrandResource::collection($brands);
+
+        return response()->json([
+            "status" => "ok",
+            "totalResults" => count($brands), 
+            "brands" => BrandResource::collection($brands)
+        ]);
+
     }
 
     /**
@@ -28,7 +34,30 @@ class BrandController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // validation
+        $messages = [
+            'name.required' => '* Please enter Brand Name.',
+            'name.min' => 'Brand Name should be 3 letters and more.',
+            'photo.required' => '* Please choose Brand Photo.',
+            'photo.image' => 'Please choose image file type.'
+        ];
+        $validatedData = $request->validate([
+            'name' => 'required|min:3',
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg'
+        ], $messages);
+
+        // file upload
+        $photoName = time().'.'.$request->photo->extension();  
+        $request->photo->move(public_path('backend_template/brand_img/'), $photoName);
+        $filePath = 'backend_template/brand_img/'.$photoName;
+
+        $brand = new Brand;
+        $brand->name = $request->name;
+        $brand->photo = $filePath;
+
+        $brand->save();
+
+        return new BrandResource($brand);
     }
 
     /**

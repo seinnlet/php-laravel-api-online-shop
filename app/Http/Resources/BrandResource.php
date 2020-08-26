@@ -12,6 +12,9 @@ class BrandResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
+
+    public static $wrap = 'brand';
+    
     public function toArray($request)
     {
         // return parent::toArray($request);

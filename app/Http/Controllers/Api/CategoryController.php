@@ -17,7 +17,12 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::all();
-        return CategoryResource::collection($categories);
+
+        return response()->json([
+            "status" => "ok",
+            "totalResults" => count($categories), 
+            "categories" => CategoryResource::collection($categories)
+        ]);
     }
 
     /**
@@ -28,7 +33,30 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // validation
+        $messages = [
+            'name.required' => '* Please enter Category Name.',
+            'name.min' => 'Category Name should be 3 letters and more.',
+            'photo.required' => '* Please choose Category Photo.',
+            'photo.image' => 'Please choose image file type.'
+        ];
+        $validatedData = $request->validate([
+            'name' => 'required|min:3',
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg'
+        ], $messages);
+
+        // file upload
+        $photoName = time().'.'.$request->photo->extension();  
+        $request->photo->move(public_path('backend_template/category_img/'), $photoName);
+        $filePath = 'backend_template/category_img/'.$photoName;
+
+        $category = new Category;
+        $category->name = $request->name;
+        $category->photo = $filePath;
+
+        $category->save();
+
+        return new CategoryResource($category);
     }
 
     /**
