@@ -11,7 +11,7 @@ class ItemController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api')->except('index');
+        $this->middleware('auth:api')->except('index', 'filter');
     }
     /**
      * Display a listing of the resource.
@@ -118,5 +118,32 @@ class ItemController extends Controller
     public function destroy(Item $item)
     {
         //
+    }
+
+    public function filter($sid, $bid)
+    {
+        $items = array();
+        if ($sid && $bid) {
+            $items = Item::where('subcategory_id', $sid)
+                         ->where('brand_id', $bid)
+                         ->get();
+        } else {
+            $items = Item::where('subcategory_id', $sid)
+                         ->orwhere('brand_id', $bid)
+                         ->get();
+        }
+
+        return response()->json([
+            "status" => "ok",
+            "totalResults" => count($items), 
+            "items" => ItemResource::collection($items)
+        ]);
+
+    }
+
+
+    public function search()
+    {
+        
     }
 }
