@@ -11,7 +11,7 @@ class ItemController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api')->except('index', 'filter');
+        $this->middleware('auth:api')->except('index', 'filter', 'search');
     }
     /**
      * Display a listing of the resource.
@@ -127,10 +127,6 @@ class ItemController extends Controller
             $items = Item::where('subcategory_id', $sid)
                          ->where('brand_id', $bid)
                          ->get();
-        } else {
-            $items = Item::where('subcategory_id', $sid)
-                         ->orwhere('brand_id', $bid)
-                         ->get();
         }
 
         return response()->json([
@@ -142,8 +138,69 @@ class ItemController extends Controller
     }
 
 
-    public function search()
+    public function search(Request $request)
     {
+        // dd($request->query('sub'));
+        // homework -> name, subcategory, brand
         
+        $items = array();
+        $name = $request->query('name');
+        $sid = $request->query('sid');
+        $bid = $request->query('bid');
+
+        if ($name && $sid && $bid) {
+            
+            $items = Item::where('name', 'LIKE', '%'.$name.'%')
+                         ->where('subcategory_id', $sid)
+                         ->where('brand_id', $bid)
+                         ->get();
+
+        } else if ($name || $sid || $bid) {
+
+            if ($name && $sid) {
+
+                $items = Item::where('name', 'LIKE', '%'.$name.'%')
+                         ->where('subcategory_id', $sid)
+                         ->get();
+            
+            } else if ($name && $bid) {
+
+                $items = Item::where('name', 'LIKE', '%'.$name.'%')
+                         ->where('brand_id', $bid)
+                         ->get();
+
+            } else if ($bid && $sid) {
+
+                $items = Item::where('subcategory_id', $sid)
+                         ->where('brand_id', $bid)
+                         ->get();
+
+            } else if ($bid) {
+
+                $items = Item::where('brand_id', $bid)
+                         ->get();
+                         
+            } else if ($sid) {
+
+                $items = Item::where('subcategory_id', $sid)
+                         ->get();
+                         
+            } else {
+                $items = Item::where('name', 'LIKE', '%'.$name.'%')
+                         ->get();
+            }
+
+        } else {
+
+            $items = Item::all();
+
+        }
+
+        return response()->json([
+            "status" => "ok",
+            "totalResults" => count($items), 
+            "items" => ItemResource::collection($items)
+        ]);
+
     }
 }
