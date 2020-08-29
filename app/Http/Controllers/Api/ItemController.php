@@ -142,59 +142,23 @@ class ItemController extends Controller
     {
         // dd($request->query('sub'));
         // homework -> name, subcategory, brand
-        
+
         $items = array();
         $name = $request->query('name');
         $sid = $request->query('sid');
         $bid = $request->query('bid');
 
-        if ($name && $sid && $bid) {
-            
-            $items = Item::where('name', 'LIKE', '%'.$name.'%')
-                         ->where('subcategory_id', $sid)
-                         ->where('brand_id', $bid)
-                         ->get();
-
-        } else if ($name || $sid || $bid) {
-
-            if ($name && $sid) {
-
-                $items = Item::where('name', 'LIKE', '%'.$name.'%')
-                         ->where('subcategory_id', $sid)
-                         ->get();
-            
-            } else if ($name && $bid) {
-
-                $items = Item::where('name', 'LIKE', '%'.$name.'%')
-                         ->where('brand_id', $bid)
-                         ->get();
-
-            } else if ($bid && $sid) {
-
-                $items = Item::where('subcategory_id', $sid)
-                         ->where('brand_id', $bid)
-                         ->get();
-
-            } else if ($bid) {
-
-                $items = Item::where('brand_id', $bid)
-                         ->get();
-                         
-            } else if ($sid) {
-
-                $items = Item::where('subcategory_id', $sid)
-                         ->get();
-                         
-            } else {
-                $items = Item::where('name', 'LIKE', '%'.$name.'%')
-                         ->get();
-            }
-
-        } else {
-
-            $items = Item::all();
-
+        $query = Item::query();
+        if ($name) {
+            $query->where('name', 'LIKE', '%'.$name.'%');
         }
+        if ($sid) {
+            $query->where('subcategory_id', $sid);
+        }
+        if ($bid) {
+            $query->where('brand_id', $bid);
+        }
+        $items = $query->get();
 
         return response()->json([
             "status" => "ok",
