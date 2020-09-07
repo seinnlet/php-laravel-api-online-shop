@@ -17,12 +17,14 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::prefix('v1')->group(function () {
 
-Route::apiresource('brands', 'Api\BrandController');
-Route::apiresource('categories', 'Api\CategoryController');
-Route::apiresource('subcategories', 'Api\SubcategoryController');
-Route::apiresource('items', 'Api\ItemController');
-Route::apiresource('users', 'Api\UserController');
+	Route::apiresource('brands', 'Api\BrandController');
+	Route::apiresource('categories', 'Api\CategoryController');
+	Route::apiresource('subcategories', 'Api\SubcategoryController');
+	Route::apiresource('items', 'Api\ItemController');
+	Route::apiresource('users', 'Api\UserController');
 
-Route::get('filter_item/{sid}/{bid}', 'Api\ItemController@filter')->name('filter_item');
-Route::get('search_item', 'Api\ItemController@search')->name('search_item');
+	Route::get('filter_item/{sid}/{bid}', 'Api\ItemController@filter')->name('filter_item');
+	Route::get('search_item', 'Api\ItemController@search')->name('search_item');
+});
