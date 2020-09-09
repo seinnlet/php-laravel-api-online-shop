@@ -24,6 +24,7 @@ Route::prefix('v1')->group(function () {
 	Route::apiresource('subcategories', 'Api\SubcategoryController');
 	Route::apiresource('items', 'Api\ItemController');
 	Route::apiresource('users', 'Api\UserController');
+	Route::apiresource('orders', 'Api\OrderController');
 
 	Route::get('filter_item/{sid}/{bid}', 'Api\ItemController@filter')->name('filter_item');
 	Route::get('search_item', 'Api\ItemController@search')->name('search_item');

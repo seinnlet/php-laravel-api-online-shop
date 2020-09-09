@@ -19,4 +19,11 @@ class Item extends Model
     {
         return $this->belongsTo('App\Brand');
     }
+
+    public function orders()
+    {
+        return $this->belongsToMany('App\Order', 'order_detail')
+                    ->withPivot('qty')
+                    ->withTimestamps();
+    }
 }

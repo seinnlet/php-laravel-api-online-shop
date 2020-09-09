@@ -7,6 +7,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Http\Resources\UserResource;
 
 class UserController extends Controller
 {
@@ -17,7 +18,13 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::all();
+
+        return response()->json([
+            "status" => "ok",
+            "totalResults" => count($users), 
+            "users" => UserResource::collection($users)
+        ]);
     }
 
     /**
@@ -42,7 +49,7 @@ class UserController extends Controller
         $user->remember_token = Str::random(10);
         $user->save();
 
-        return $user;
+        return new UserResource($user);
     }
 
     /**
@@ -53,7 +60,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        //
+        return new UserResource($user);
     }
 
     /**

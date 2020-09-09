@@ -30,7 +30,10 @@ class ItemResource extends JsonResource
             "item_photo" => url($this->photo),
             "item_price" => $this->price,
             "item_discount" => $this->discount,
-            "item_description" => $this->discription,
+            "item_description" => $this->description,
+            "qty" => $this->whenPivotLoaded('order_detail', function () {
+                return $this->pivot->qty;
+            }),
             "item_subcategory" => new SubcategoryResource(Subcategory::find($this->subcategory_id)),
             "item_brand" => new BrandResource(Brand::find($this->brand_id)),
         ];
