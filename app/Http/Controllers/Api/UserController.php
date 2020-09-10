@@ -11,6 +11,11 @@ use App\Http\Resources\UserResource;
 
 class UserController extends Controller
 {
+    // middleware
+    public function __construct($value='')
+    {
+        $this->middleware('auth:api')->except('store');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -47,6 +52,7 @@ class UserController extends Controller
         $user->password = Hash::make($request->password);
         $user->email_verified_at = now();
         $user->remember_token = Str::random(10);
+        $user->assignRole('Customer');
         $user->save();
 
         return new UserResource($user);

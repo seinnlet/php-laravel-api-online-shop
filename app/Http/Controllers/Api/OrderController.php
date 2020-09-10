@@ -9,6 +9,11 @@ use App\Http\Resources\OrderResource;
 
 class OrderController extends Controller
 {
+    // middleware
+    public function __construct($value='')
+    {
+        $this->middleware('auth:api');
+    }
     /**
      * Display a listing of the resource.
      *
