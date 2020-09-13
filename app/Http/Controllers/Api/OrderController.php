@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Order;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\OrderResource;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -21,7 +23,15 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::all();
+        // $orders = Order::all();
+        $user = null;
+        $user = Auth::user();
+
+        if ($user->hasRole('Admin')) {
+            $orders = Order::orderBy('created_at', 'desc')->get();
+        } else {
+            $orders = Order::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+        }
 
         return response()->json([
             "status" => "ok",
@@ -43,7 +53,7 @@ class OrderController extends Controller
         $order = new Order;
         $order->voucherno = uniqid(); 
         $order->orderdate = date('Y-m-d');
-        $order->user_id = 1;
+        $order->user_id = Auth::id();
         $order->shippingmethod = $request->shippingmethod;
         $order->shippingfees = $request->shippingfees;
         $order->totalamount = $request->totalamount;
